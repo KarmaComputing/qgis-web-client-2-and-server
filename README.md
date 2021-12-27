@@ -75,9 +75,14 @@ python3 -c 'import secrets; print("JWT_SECRET_KEY=\"%s\"" % secrets.token_hex(48
 
 ## ERROR in config_generator: ERROR generating thumbnail for WMS qwc_demo
 
+When pressing the green "Generate service configuration" button in http://localhost:8088/qwc_admin/
+the following error is seen:
+
 ```
 qwc-config-service_1           | [2021-12-27 19:22:02,970] ERROR in config_generator: ERROR generating thumbnail for WMS qwc_demo:
 qwc-config-service_1           | [Errno 13] Permission denied: '/qwc2//assets/img/genmapthumbs/qwc_demo.png'
 ```
+Relating (probably) to [qwc-config-service](https://github.com/qwc-services/qwc-config-service), which is
+called in `build-services.sh` during docker-compose up.
 
 Fix: ?
