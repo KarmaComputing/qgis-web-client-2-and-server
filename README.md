@@ -24,3 +24,7 @@ Run once
 ```
 ./run.sh
 ```
+
+## Visit web client
+
+http://localhost:8088/
