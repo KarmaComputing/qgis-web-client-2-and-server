@@ -28,3 +28,18 @@ Run once
 ## Visit web client
 
 http://localhost:8088/
+
+# Errors
+
+
+## RuntimeError The session is unavailable because no secret key was set
+```
+qwc-auth-service_1             | RuntimeError: The session is unavailable because no secret key was set.  Set the secret_key on the application to something unique and secret.
+```
+
+Fix: You are probably missing `JWT_SECRET_KEY` in your `.env` file inside `qwc-docker` folder.
+
+To generate one:
+```
+python3 -c 'import secrets; print("JWT_SECRET_KEY=\"%s\"" % secrets.token_hex(48))' >>.env
+```
