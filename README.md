@@ -79,17 +79,46 @@ python3 -c 'import secrets; print("JWT_SECRET_KEY=\"%s\"" % secrets.token_hex(48
 
 Scenario: I follow the steps to [Add a QGIS project](https://qwc.sourcepole.com/quick-start/#add-a-qgis-project) but when I go to http://localhost:8088/, I don't see the new project.
 
-Fix?
 
 1. Generate new Service configuration: http://localhost:8088/qwc_admin/
 2. Go to Resources -> and click 'Import maps' (http://localhost:8088/qwc_admin/resources), then you'll see `natural-earth-countries` in the list (if that's what you've imported)
-3. (also needed?) Still on `Resources` page, click `Edit` (next to the new map) then `Import layers` (takes long time)
+3. Still on `Resources` page, click `Edit` (next to the new map) then `Import layers` (takes long time) see below if error observed:
 
 Error observed:
 ```
 qwc-api-gateway_1              | 172.23.0.1 - - [27/Dec/2021:21:46:38 +0000] "POST /qwc_admin/resources/5/import_children HTTP/1.1" 504 494 "http://localhost:8088/qwc_admin/resources/5/edit" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36" "-"
 qwc-config-service_1           | [2021-12-27 21:46:39,312] CRITICAL in config_generator: Could not get GetProjectSettings from http://qwc-qgis-server/ows/qwc_demo:
 ```
+
+Fix:
+
+> Make sure you have updated `pg_service.conf` to include `qwc_geodb` for localhost access.
+  TODO: Understand if/why both are needed
+
+
+`pg_service.conf` example:
+```
+...removed to save space...
+
+[qwc_geodb]
+host=qwc-postgis
+port=5432
+dbname=qwc_demo
+user=qwc_service
+password=qwc_service
+sslmode=disable
+
+...removed to save space...
+
+[qwc_geodb]
+host=localhost
+port=5439
+dbname=qwc_demo
+user=qwc_service
+password=qwc_service
+sslmode=disable
+```
+Stop/start docker-compose then repeat step 3.
 
 
 http://localhost:8088/qwc_admin/resources?type=map
