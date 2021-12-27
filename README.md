@@ -39,6 +39,7 @@ http://localhost:8088/
 Using `docker-compose down --volumes`
 Then visit http://localhost:8088/qwc_admin/ and you'll be able to start-over
 
+Full example reset password (and delete all persistant data)
 ```
 cd /path/to/your/project (e.g /home/fred/qgis-web-client-2-and-server/qwc-services/qwc-docker(
 (base) (master)$ docker-compose down --volumes 
