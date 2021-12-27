@@ -72,3 +72,12 @@ To generate one:
 ```
 python3 -c 'import secrets; print("JWT_SECRET_KEY=\"%s\"" % secrets.token_hex(48))' >>.env
 ```
+
+## ERROR in config_generator: ERROR generating thumbnail for WMS qwc_demo
+
+```
+qwc-config-service_1           | [2021-12-27 19:22:02,970] ERROR in config_generator: ERROR generating thumbnail for WMS qwc_demo:
+qwc-config-service_1           | [Errno 13] Permission denied: '/qwc2//assets/img/genmapthumbs/qwc_demo.png'
+```
+
+Fix: ?
