@@ -73,6 +73,28 @@ To generate one:
 python3 -c 'import secrets; print("JWT_SECRET_KEY=\"%s\"" % secrets.token_hex(48))' >>.env
 ```
 
+# FAQ
+
+## Why is my qgs map not showing after I copied it into `./qwc-docker/volumes/config-in/default/qgis_projects`?
+
+1. Generate new Service configuration: http://localhost:8088/qwc_admin/
+2. Go to Resources -> and click 'Import maps' (http://localhost:8088/qwc_admin/resources), then you'll see `natural-earth-countries` in the list (if that's what you've imported)
+3. (also needed?) Still on `Resources` page, click `Edit` (next to the new map) then `Import layers` (takes long time)
+
+Error observed:
+```
+qwc-api-gateway_1              | 172.23.0.1 - - [27/Dec/2021:21:46:38 +0000] "POST /qwc_admin/resources/5/import_children HTTP/1.1" 504 494 "http://localhost:8088/qwc_admin/resources/5/edit" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36" "-"
+qwc-config-service_1           | [2021-12-27 21:46:39,312] CRITICAL in config_generator: Could not get GetProjectSettings from http://qwc-qgis-server/ows/qwc_demo:
+```
+
+
+http://localhost:8088/qwc_admin/resources?type=map
+
+## What is Difference between .qgs and .qgz
+
+Not a lot- `qgz` is a zipped `qgz`
+See [Difference between .qgs and .qgz](https://gis.stackexchange.com/questions/333489/difference-between-qgs-and-qgz) for detail.
+
 ## ERROR in config_generator: ERROR generating thumbnail for WMS qwc_demo
 
 When pressing the green "Generate service configuration" button in http://localhost:8088/qwc_admin/
