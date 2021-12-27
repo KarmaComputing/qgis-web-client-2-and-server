@@ -77,6 +77,10 @@ python3 -c 'import secrets; print("JWT_SECRET_KEY=\"%s\"" % secrets.token_hex(48
 
 ## Why is my qgs map not showing after I copied it into `./qwc-docker/volumes/config-in/default/qgis_projects`?
 
+Scenario: I follow the steps to [Add a QGIS project](https://qwc.sourcepole.com/quick-start/#add-a-qgis-project) but when I go to http://localhost:8088/, I don't see the new project.
+
+Fix?
+
 1. Generate new Service configuration: http://localhost:8088/qwc_admin/
 2. Go to Resources -> and click 'Import maps' (http://localhost:8088/qwc_admin/resources), then you'll see `natural-earth-countries` in the list (if that's what you've imported)
 3. (also needed?) Still on `Resources` page, click `Edit` (next to the new map) then `Import layers` (takes long time)
