@@ -29,7 +29,7 @@ Run once
 
 http://localhost:8088/
 
-# Errors
+# Errors & how to fix
 
 ## Invalid username or password (when accessing http://localhost:8088/auth/login)
 
