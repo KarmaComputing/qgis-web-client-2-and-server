@@ -1,6 +1,241 @@
-# How to setup QGIS Web 2 (client) and QGIS Server
 
-> Note the authoritative source for information on QGIS is the official project (see https://github.com/qwc-services/ and https://github.com/qgis/)
+# QWC Services & QGIS online setup notes
+
+Goal: I have a few QGIS Desktop projects which I want to successfully load/show
+on the awesome "QWC2" aka ["QWC / QWC Services" project](https://qwc-services.github.io/master/) so people can see these map projects in the web browser.
+
+You'll find sections
+
+- How to I get the software?
+- How do I configure it?
+- How do I run it?
+
+## Setup-  How to I get QWC Services software?
+
+Copied from [Quickstart](https://qwc-services.github.io/master/QuickStart/)
+
+```shell
+git clone --recursive https://github.com/qwc-services/qwc-docker.git
+cd qwc-docker
+cp docker-compose-example.yml docker-compose.yml
+cp api-gateway/nginx-example.conf api-gateway/nginx.conf
+```
+
+## How do I configure it?
+
+## Files of importance
+
+- `./qwc-docker/volumes/config-in/default/themesConfig.json`
+  - This is where you state the maps you want to load,
+    their title, folder they're stored in, and coordinate system used (CRS)
+
+E.g. Excerpt from `./config-in/default/themesConfig.json`:
+
+```shell
+   ...
+   "defaultMapCrs": "EPSG:3857", 
+   "defaultTheme": "scan/solution",
+    "themes": {
+        "items": [
+           {
+                "id": "leazes_park",
+                "title": "Leazes Park",
+                "url": "/ows/scan/solution/LeazesPark/LeazesPark",
+                "mapCrs": "EPSG:27700",
+                "backgroundLayers": [{"name": "background_layer_name"}],
+                "searchProviders": ["coordinates"]
+           },
+           {
+                "id": "example_two",
+                "title": "Example Two",
+                "url": "/ows/scan/solution/ExampleMapTwo/ExampleMapTwo",
+                "mapCrs": "EPSG:27700",
+                "backgroundLayers": [{"name": "background_layer_name"}],
+                "searchProviders": ["coordinates"]
+           }
+        ],
+        "backgroundLayers": ...
+        ...
+```
+
+## `../config/default/mapViewerConfig.json` config
+
+Needs to be stopped/started after edit:
+
+```shell
+docker-compose stop qwc-map-viewer
+# Edit ../config/default/mapViewerConfig.json
+docker-compose start qwc-map-viewer
+```
+
+```shell
+...
+          {                                                                                                                                                                             
+            "id": "melvin",                                                                                                                                                              
+            "name": "solution/melvinGC/melvinGC",                                                                                                                                         
+            "title": "melvin",                                                                                                                                                           
+            "description": "",                                                                                                                                                          
+            "wmsOnly": false,                                                                                                                                                           
+            "wms_name": "scan/solution/melvinGC/melvinGC",                                                                                                                                
+            "url": "/ows/scan/solution/melvinGC/melvinGC",                                                                                                                                
+            "attribution": {                                                                                                                                                            
+              "Title": null,                                                                                                                                                            
+              "OnlineResource": null                                                                                                                                                    
+            },                                                                                                                                                                          
+            "abstract": "",                                                                                                                                                             
+            "keywords": "",                                                                                                                                                             
+            "onlineResource": "",                                                                                                                                                       
+            "contact": {                                                                                                                                                                
+              "person": null,                                                                                                                                                           
+              "organization": null,                                                                                                                                                     
+              "position": null,                                                                                                                                                         
+              "phone": null,                                                                                                                                                            
+              "email": null                                                                                                                                                             
+            },                                                                                                                                                                          
+            "mapCrs": "EPSG:27700",                                                                                                                                                     
+            "bbox": {                                                                                                                                                                   
+              "crs": "EPSG:4326",                                                                                                                                                       
+              "bounds": [                                                                                                                                                               
+                -3.332358,                                                                                                                                                              
+                57.61783,                                                                                                                                                               
+                -3.299083,                                                                                                                                                              
+                57.635682                                                                                                                                                               
+              ]                                                                                                                                                                         
+            },
+            "initialBbox": {                                                                                                                                                            
+              "crs": "EPSG:4326",                                                                                                                                                       
+              "bounds": [                                                                                                                                                               
+                -3.332358,                                                                                                                                                              
+                57.61783,                                                                                                                                                               
+                -3.299083,                                                                                                                                                              
+                57.635682                                                                                                                                                               
+              ]                                                                                                                                                                         
+            },
+...
+```
+
+Get the CRS correct for the map.
+
+## How do I run QWC Services?
+
+```shell
+cd qwc-docker/
+docker compose up
+```
+
+Visit: [http://localhost:8088/auth/login?url=http://localhost:8088/qwc_admin/](http://localhost:8088/auth/login?url=http://localhost:8088/qwc_admin/)
+
+- "What's the username?" `admin` most likely.
+- "What's the password"? Good question. Can be set by setting `POSTGRES_PASSWORD` in the `docker-compose.yml` file, service `qwc-postgis` -> `environment` section with a key
+of `POSTGRES_PASSWORD` and the value of a password.
+
+## Loading / Generating Maps for the Online web view
+
+> The [Generate service configuration](http://localhost:8088/qwc_admin/) button on the QWC
+  Admin panel is lovely, and needed, however, by default it (and can't?) show all the failure logs you **need** to see when loading in new map configurations. To see those (and fix them)
+
+## Errors / solutions
+
+> Whilst the project script [set_permissions.sh](https://github.com/qwc-services/qwc-docker/blob/f1f7103695dbf7af5eaf327f280c79e00cd8221e/scripts/set_permissions.sh#L4)
+> exists, it assumes an SELinux environment and therefore does not help if you're in, for example an Ubuntu/Debian environment
+
+An Ubuntu version might look like:
+
+```shell
+# As root
+if [ "$(whoami)" != "root" ]; then
+    echo "Please run me as root"
+    exit 3
+fi
+cd ./qwc-docker
+chown -R 999:999 ./volumes/db
+chmod -R 700 ./volumes/db
+
+# services inside the containers are running as $QWC_UID:$QWC_GID
+chown -R $QWC_UID:$QWC_GID ./volumes/config
+
+# solr inside the conainer is running as 8983
+chown -R 8983:8983 ./volumes/solr/data ./volumes/solr/configsets
+
+chown $QWC_UID:$QWC_GID ./volumes/demo-data/setup-demo-data-permissions.sh
+
+# services inside the containers are running as $QWC_UID:$QWC_GID
+chown -R $QWC_UID:$QWC_GID ./volumes/config
+chown -R $QWC_UID:$QWC_GID ./volumes/config-in ./volumes/qwc2 ./volumes/qgs-resources ./volumes/attachments
+```
+
+Observed errors on Ubuntu:
+
+```shell
+Warning 4: Failed to open /data/<path>/<filename>.shp: Permission denied
+```
+
+Error:
+
+```shell
+Python Exception: [Errno 13] Permission denied: '/srv/qwc_service/config-out/default/searchConfig.json'
+Traceback (most recent call last):
+  File "/srv/qwc_service/server.py", line 56, in generate_configs
+    generator.write_configs()
+  File "/srv/qwc_service/config_generator/config_generator.py", line 405, in write_configs
+    copyfile(
+  File "/usr/lib/python3.12/shutil.py", line 262, in copyfile
+    with open(dst, 'wb') as fdst:
+         ^^^^^^^^^^^^^^^
+PermissionError: [Errno 13] Permission denied: '/srv/qwc_service/config-out/default/searchConfig.json'
+
+```shell
+qwc-services expects it can [write and even create directories](https://github.com/qwc-services/qwc-config-generator/blob/063100e44d35103005a9442b17eb8e905c90d0ac/src/config_generator/config_generator.py#L361) on the fly, so needs permission to do that. Given the mounted volumes and how Docker does that, it's likely
+you'll need to `sudo chown -R 8983:8983 ./qwc-docker/volumes` your `volumes` directory, whilst not forgetting to stop/start again your `docker compose up` stack.
+
+
+Error:
+
+```shell
+Python Exception: [Errno 13] Permission denied: '/srv/qwc_service/config-out/default/legendConfig.json'
+Traceback (most recent call last):
+  File "/srv/qwc_service/server.py", line 56, in generate_configs
+    generator.write_configs()
+  File "/srv/qwc_service/config_generator/config_generator.py", line 405, in write_configs
+    copyfile(
+  File "/usr/lib/python3.12/shutil.py", line 262, in copyfile
+    with open(dst, 'wb') as fdst:
+         ^^^^^^^^^^^^^^^
+PermissionError: [Errno 13] Permission denied: '/srv/qwc_service/config-out/default/legendConfig.json'
+
+```
+
+```shell
+qwc-config-service-1           | [2025-07-20 18:54:58,251] WARNING in config_generator: Failed to write form for layer edit_lines: [Errno 13] Permission denied: '/qwc2/assets/forms/autogen/qwc_demo_edit_lines.ui'
+qwc-config-service-1           | [2025-07-20 18:54:58,252] WARNING in config_generator: Failed to write form for layer edit_points: [Errno 13] Permission denied: '/qwc2/assets/forms/autogen/qwc_demo_edit_points.ui'
+qwc-config-service-1           | [2025-07-20 18:54:58,254] WARNING in config_generator: Failed to write form for layer edit_polygons: [Errno 13] Permission denied: '/qwc2/assets/forms/autogen/qwc_demo_edit_polygons.ui'
+```
+
+Error:
+
+```shell
+Unable to load the theme "melvinGC": the projection EPSG:27700 is not defined.
+```
+
+Answer:
+
+What the docs don't show easily is you need to edit/add to the list of `projections` in `qwc-docker/volumes/config/default/mapViewerConfig.json`,
+for example, to add support in the map viewer for EPSG:27700, you'd add:
+
+```shell
+        "projections": [                                                                                                                                                               
+          {                                                                                                                                                                            
+            "code": "EPSG:27700",                                                                                                                                                      
+            "proj": "+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +towgs84=446.448,-125.157,542.06,0.15,0.247,0.842,-20.489 +units=m +no_defs",
+            "label": "OSGB 1936 / British National Grid"                                                                                                                               
+          },
+```
+
+(There's a website which lists all these seemingly random looking CRSs in a big open database <3 the project has an interesting history!)
+
+## How to setup QGIS Web 2 (client) and QGIS Server (old)
+
+> Note the authoritative source for information on QGIS is the official project (see [https://github.com/qwc-services/](https://github.com/qwc-services/) and [https://github.com/qgis/](https://github.com/qgis/))
 
 > In fact, the official documentation will probably be better: https://qwc.sourcepole.com/quick-start/ we **strongly advise you follow the official quickstart**
 
@@ -14,6 +249,7 @@ There are two well-known clients:
 There is one QGIS server implementation (implementing [web map service](https://en.wikipedia.org/wiki/Web_Map_Service) and [Web Feature Services (WFS)](https://en.wikipedia.org/wiki/Web_Feature_Service).
 
 ## Install
+
 Run once
 ```
 ./install.sh
