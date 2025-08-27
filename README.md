@@ -136,20 +136,8 @@ of `POSTGRES_PASSWORD` and the value of a password.
 
 ## Errors / solutions
 
-> Whilst the project script [set_permissions.sh](https://github.com/qwc-services/qwc-docker/blob/f1f7103695dbf7af5eaf327f280c79e00cd8221e/scripts/set_permissions.sh#L4)
-> exists, it assumes an SELinux environment and therefore does not help if you're in, for example an Ubuntu/Debian environment
+> The [set_permissions.sh](https://github.com/qwc-services/qwc-docker/blob/f1f7103695dbf7af5eaf327f280c79e00cd8221e/scripts/set_permissions.sh#L4) tidy's up permissions setting them to the correct owner/permissions.
 
-An Ubuntu version might look like:
-
-```shell
-# As root
-if [ "$(whoami)" != "root" ]; then
-    echo "Please run me as root"
-    exit 3
-fi
-cd ./qwc-docker
-chown -R 999:999 ./volumes/db
-chmod -R 700 ./volumes/db
 
 # services inside the containers are running as $QWC_UID:$QWC_GID
 chown -R $QWC_UID:$QWC_GID ./volumes/config
