@@ -233,6 +233,10 @@ for example, to add support in the map viewer for EPSG:27700, you'd add:
 
 (There's a website which lists all these seemingly random looking CRSs in a big open database <3 the project has an interesting history!)
 
+> Below are old / outdated notes left for reference.
+
+<strike>
+
 ## How to setup QGIS Web 2 (client) and QGIS Server (old)
 
 > Note the authoritative source for information on QGIS is the official project (see [https://github.com/qwc-services/](https://github.com/qwc-services/) and [https://github.com/qgis/](https://github.com/qgis/))
@@ -377,3 +381,4 @@ Relating (probably) to [qwc-config-service](https://github.com/qwc-services/qwc-
 called in `build-services.sh` during docker-compose up.
 
 Fix: ?
+</strike>
