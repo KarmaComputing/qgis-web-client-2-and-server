@@ -219,7 +219,7 @@ for example, to add support in the map viewer for EPSG:27700, you'd add:
           },
 ```
 
-(There's a website which lists all these seemingly random looking CRSs in a big open database <3 the project has an interesting history!)
+(There's a website [https://epsg.io/](https://epsg.io/) which lists all these seemingly random looking CRSs in a big open database <3 the project has an interesting history!)
 
 > Below are old / outdated notes left for reference.
 
